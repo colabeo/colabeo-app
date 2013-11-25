@@ -335,7 +335,7 @@
   padding: 0;
   width: 29px;
   height: 29px;
-  background: url(../../../../../Desktop/Component/_include_et_form/img/polaris.png) no-repeat;
+  background: url(../img/polaris.png) no-repeat;
   border: none;
   cursor: pointer;
 }
@@ -374,7 +374,7 @@
 @media only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (-moz-min-device-pixel-ratio: 1.5), only screen and (-o-min-device-pixel-ratio: 3/2), only screen and (min-device-pixel-ratio: 1.5) {
   .eternity-form .icheckbox_polaris,
   .eternity-form .iradio_polaris {
-    background-image: url(../../../../../Desktop/Component/_include_et_form/img/polaris@2x.png);
+    background-image: url(../img/polaris@2x.png);
     -webkit-background-size: 310px 31px;
     background-size: 310px 31px;
   }
@@ -386,7 +386,7 @@
   padding: 0;
   width: 22px;
   height: 22px;
-  background: url(../../../../../Desktop/Component/_include_et_form/img/blue.png) no-repeat;
+  background: url(../img/blue.png) no-repeat;
   border: none;
   cursor: pointer;
 }
@@ -425,7 +425,7 @@
 @media only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (-moz-min-device-pixel-ratio: 1.5), only screen and (-o-min-device-pixel-ratio: 3/2), only screen and (min-device-pixel-ratio: 1.5) {
   .eternity-form .icheckbox_square-blue,
   .eternity-form .iradio_square-blue {
-    background-image: url(../../../../../Desktop/Component/_include_et_form/img/blue@2x.png);
+    background-image: url(../img/blue@2x.png);
     -webkit-background-size: 240px 24px;
     background-size: 240px 24px;
   }
