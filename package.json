@@ -1,5 +1,5 @@
 {
-  "name": "application-name",
+  "name": "colabeo",
   "version": "0.0.1",
   "private": true,
   "dependencies": {
@@ -8,6 +8,7 @@
     "ejs": ">= 0.8.5",
     "passport": ">= 0.1.6",
     "passport-local": ">= 0.1.0",
-    "bcrypt": ">= 0.5.0"
+    "bcrypt": ">= 0.5.0",
+    "parse": ">=1.2.13"
   }
 }

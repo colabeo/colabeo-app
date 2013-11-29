@@ -2,6 +2,8 @@ var locomotive = require('locomotive');
 var passport = require('passport');
 var Controller = locomotive.Controller;
 
+var Parse = require('parse').Parse;
+
 var Account = require('../models/account');
 
 var AccountController = new Controller();
@@ -15,6 +17,15 @@ AccountController.show = function() {
 };
 
 AccountController.new = function() {
+  //console.log("Is parse here? " + parseApp);
+    var query = new Parse.Query(Parse.User);
+    query.find({
+        success: function(users) {
+            for (var i = 0; i < users.length; ++i) {
+                console.log(users[i].get('username'));
+            }
+        }
+    });
   this.render();
 };
 

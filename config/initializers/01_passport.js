@@ -2,18 +2,29 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var Account = require('../../app/models/account');
 
+var Parse = require('parse').Parse;
+
 // Use the LocalStrategy within Passport.
 
 passport.use(new LocalStrategy({
-    usernameField: 'email'
+    //usernameField: 'email'
+
   },
   function(email, password, done) {
-//    // Find the user by username.  If there is no user with the given
-//    // username, or the password is not correct, set the user to `false` to
-//    // indicate failure.  Otherwise, return the authenticated `user`.
-//    Account.authenticate(email, password, function(err, user) {
-//      return done(err, user);
-//    });
+      console.log("email - " + email);
+      console.log("password - " + password);
+      Parse.User.logIn(email, password, {
+          success: function(user) {
+              console.log("login - success");
+              return done(user);
+          },
+          error: function(user, error) {
+              //self.$(".login-form .error").html("Invalid username or password. Please try again.").show();
+              //this.$(".login-form button").removeAttr("disabled");
+              console.log("login - error");
+              return done(error, user);
+          }
+      });
   }
 ));
 
