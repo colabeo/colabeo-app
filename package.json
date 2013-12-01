@@ -9,6 +9,7 @@
     "passport": ">= 0.1.6",
     "passport-local": ">= 0.1.0",
     "bcrypt": ">= 0.5.0",
-    "parse": ">=1.2.13"
+    "parse": ">=1.2.13",
+    "sendgrid": ">=0.4.5"
   }
 }

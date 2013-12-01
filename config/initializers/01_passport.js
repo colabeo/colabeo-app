@@ -16,13 +16,13 @@ passport.use(new LocalStrategy({
       Parse.User.logIn(email, password, {
           success: function(user) {
               console.log("login - success");
-              return done(user);
+              return done(null, user);
           },
           error: function(user, error) {
               //self.$(".login-form .error").html("Invalid username or password. Please try again.").show();
               //this.$(".login-form button").removeAttr("disabled");
-              console.log("login - error");
-              return done(error, user);
+              console.log("login - error" + JSON.stringify(error));
+              return done(null, false, error.message);
           }
       });
   }
