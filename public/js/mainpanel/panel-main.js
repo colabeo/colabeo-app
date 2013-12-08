@@ -3,32 +3,6 @@ var curCallID;
 var curUrl = "";
 
 var raw_html='<li class="user ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-btn-up-c" browserid="[tag1]" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-icon="arrow-r" data-iconpos="right" data-theme="c"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a class="ui-link-inherit"><img src="[tag2]" class="ui-li-thumb"><h3 class="ui-li-heading">[tag3]</h3><p class="ui-li-desc">[tag4]</p><div class="socialbuttons"></div></a></div><span class="ui-icon ui-icon-arrow-r ui-icon-shadow">&nbsp;</span></div></li>';
-var hardcoded_val={
-    1508235435: '28BE7932-53F1-024F-063C-877712F6861F', //Chapman
-    1508235449: '634FCA96-05A2-A7DB-2D6E-5BA7E5D50C9D', //Jeff
-    1508235451: '5EEF475B-DB67-CC9C-235E-C49D29F96594', //Lap
-    1508235450: 'C116FD42-F2B5-EE59-17A6-78F40F22221F',  //Shawn
-    //new yammer app
-    1508780839: '634FCA96-05A2-A7DB-2D6E-5BA7E5D50C9D',  //Jeff
-    1508830799: 'C116FD42-F2B5-EE59-17A6-78F40F22221F',  //Shawn
-    1508780770: '28BE7932-53F1-024F-063C-877712F6861F', //Chapman
-};
-var hardcoded_val2={
-    1508235435: 'Chapman Hong',
-    1508235449: 'Jeff Lin',
-    1508235451: 'Lap Kuong Chan',
-    1508235450: 'Shawn Wang',
-    //new yammer app
-    1508780839: 'Jeff Lin',
-    1508830799: 'Shawn Wang',
-    1508780770: 'Chapman Hong',
-};
-
-var userId = GetURLParameter('id');
-console.log('userId: ' + userId);
-
-var myID=hardcoded_val[userId];
-var myName = hardcoded_val2[userId];
 
 
 // [tag1]   -   browserID(berryID)
@@ -42,12 +16,7 @@ function refleshContacts(people) {
     for(var i in people) {  //enum people list and generate html content
         // console.log("var " + i+" = "+people[i]);
         var cooked_html='';
-        var hardcoded_berryID=hardcoded_val[people[i].handle.yammer];
-        if ( typeof hardcoded_berryID !== 'undefined' && hardcoded_berryID )
-        {
-            cooked_html=raw_html.replace("[tag1]", hardcoded_berryID);
-        }
-        else { cooked_html=raw_html.replace("[tag1]", "xxxxx"); }
+        cooked_html=raw_html.replace("[tag1]", 'xxxxx'); // TODO: This is call-identifier, we use colabeoUID on this, you need to search or firebase index then fill this blank.
         cooked_html=cooked_html.replace("[tag2]", people[i].avatar);
         cooked_html=cooked_html.replace("[tag3]", people[i].id);
         cooked_html=cooked_html.replace("[tag4]", people[i].description);
@@ -94,6 +63,10 @@ BerryBase.prototype.getContacts = function(callback)
 
 //=================================================================
 
+function getUserID() {
+    return $('#objectId').attr('data-id');
+}
+
 function GetURLParameter(sParam) {
 
     var sPageURL = window.location.search.substring(1);
@@ -109,7 +82,9 @@ function GetURLParameter(sParam) {
 
 //register contact list click event
 $(document).ready(function() {
-    myBerry = new BerryBase('https://koalalab-berry.firebaseio.com/', userId);
+    var userID=getUserID();
+    console.log('userId: ' + userID);
+    myBerry = new BerryBase('https://koalalab-berry.firebaseio.com/', userID);
     myBerry.getContacts(refleshContacts);
 
     $('.ui-input-text.ui-body-c').attr('placeholder', 'Welcome, ' + myName.split(' ')[0] + '!');
