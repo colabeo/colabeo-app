@@ -9,4 +9,5 @@ module.exports = function routes() {
   this.match('login', 'account#loginForm', { via: 'get' });
   this.match('login', 'account#login', { via: 'post' });
   this.match('logout', 'account#logout');
+  this.match('user/importcontacts', 'account#importContacts', { via: 'post'});
 };

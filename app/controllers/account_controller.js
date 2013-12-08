@@ -92,4 +92,8 @@ AccountController.logout = function() {
   this.redirect('/');
 };
 
+AccountController.importContacts = function() {
+    this.redirect('/');
+};
+
 module.exports = AccountController;
