@@ -220,6 +220,7 @@ Famous(function(require) {
 
     // setup Firebase
     var firebase = new Firebase('https://firefeed.firebaseio.com/');
+    //var firebase = new Firebase('https://koalalab-berry.firebaseio.com/');
     SparkItem.setFirebase(firebase);
 
     // create the 'Home' section

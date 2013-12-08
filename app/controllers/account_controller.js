@@ -86,13 +86,9 @@ AccountController.login = function() {
 
 AccountController.logout = function() {
 
-  console.log('@ before logout(), current Passport user - ' + JSON.stringify(this.req.user));
-  console.log('@ before logout(), current Parse user - ' + JSON.stringify(Parse.User.current()));
-
   this.req.logout();
+  Parse.User.logOut();
 
-  console.log('@ after logout(), current Passport user - ' + JSON.stringify(this.req.user));
-  console.log('@ after logout(), current Parse user - ' + JSON.stringify(Parse.User.current()));
   this.redirect('/');
 };
 
