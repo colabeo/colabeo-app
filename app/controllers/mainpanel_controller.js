@@ -8,7 +8,8 @@ MainPanelController.show = function() {
         return this.res.redirect("/login");
 
     //this.user = this.req.user;
-    this.render();
+    console.log("user = " + this.req.user.id + this.req.user.get("email"));
+    this.render({ user: this.req.user });
 }
 
 MainPanelController.famous = function() {

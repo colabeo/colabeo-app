@@ -17,6 +17,11 @@
     </script>
 </head>
 <body>
+
+<% if (user) { %>
+<div id="objectId" data-name="objectId" data-id="<%=user.id%>"></div>
+<% } %>
+
 <!-- Start of first page: #one -->
 <div data-role="page" id="one">
     <!--<div data-role="navbar" data-iconpos="top">
