@@ -15,7 +15,8 @@ passport.use(new LocalStrategy({
       console.log("password - " + password);
       Parse.User.logIn(email, password, {
           success: function(user) {
-              console.log("login - success");
+              console.log("login - success" + JSON.stringify(user));
+              console.log(done);
               return done(null, user);
           },
           error: function(user, error) {
@@ -31,11 +32,17 @@ passport.use(new LocalStrategy({
 // Passport session setup.
 
 passport.serializeUser(function(user, done) {
-  done(null, user._id);
+  console.log("serializeUser - ", user.id);
+  done(null, user.id);
 });
 
 passport.deserializeUser(function(id, done) {
 //  Account.findById(id, function (err, user) {
 //    done(err, user);
 //  });
+
+  console.log("deserializerUser");
+  var user = Parse.User.current();
+  done(null, user);
+
 });

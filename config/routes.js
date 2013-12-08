@@ -1,8 +1,10 @@
 module.exports = function routes() {
-  this.root('account#new');
+  this.root('mainpanel#show');
   this.resource('account');
-  this.match('index', 'account#loginForm', { via: 'get'});
-  this.match('register', 'account#registrationForm', { via: 'get'});
+  this.match('main', 'mainpanel#show', { via: 'get' });
+  this.match('index', 'account#loginForm', { via: 'get' });
+  this.match('register', 'account#registrationForm', { via: 'get' });
+  this.match('signup', 'account#signup', { via: 'post' });
   this.match('login', 'account#loginForm', { via: 'get' });
   this.match('login', 'account#login', { via: 'post' });
   this.match('logout', 'account#logout');

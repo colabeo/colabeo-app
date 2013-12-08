@@ -33,7 +33,7 @@
 <br />
 <div class="container eternity-form">
     <div class="registration-form-section">
-        <form>
+        <form method="POST" action="/signup">
             <div class="section-title reg-header animated fadeInDown">
                 <h3>Get your Account Here </h3>
 
@@ -44,19 +44,19 @@
                         <div class="textbox-wrap">
                             <div class="input-group">
                                 <span class="input-group-addon "><i class="icon-user icon-color"></i></span>
-                                <input type="text" class="form-control " placeholder="FirstName" required="required" />
+                                <input type="text" name="firstname" class="form-control " placeholder="FirstName" required="required" />
                             </div>
                         </div>
                         <div class="textbox-wrap">
                             <div class="input-group">
                                 <span class="input-group-addon "><i class="icon-user icon-color"></i></span>
-                                <input type="text" class="form-control " placeholder="LastName" required="required" />
+                                <input type="text" name="lastname" class="form-control " placeholder="LastName" required="required"/>
                             </div>
                         </div>
                         <div class="textbox-wrap">
                             <div class="input-group">
                                 <span class="input-group-addon "><i class="icon-envelope icon-color"></i></span>
-                                <input type="email" class="form-control " placeholder="Email Id" required="required" />
+                                <input type="email" name="email" class="form-control " placeholder="Email Id" required="required" />
                             </div>
                         </div>
 
@@ -68,19 +68,19 @@
                         <div class="textbox-wrap">
                             <div class="input-group">
                                 <span class="input-group-addon "><i class="icon-user icon-color"></i></span>
-                                <input type="text" class="form-control " placeholder="UserName" required="required" />
+                                <input type="text" name="username" class="form-control " placeholder="UserName" required="required" />
                             </div>
                         </div>
                         <div class="textbox-wrap">
                             <div class="input-group">
                                 <span class="input-group-addon "><i class="icon-key icon-color"></i></span>
-                                <input type="password" class="form-control " placeholder="Password" required="required" />
+                                <input type="password" name="password" class="form-control " placeholder="Password" required="required" />
                             </div>
                         </div>
                         <div class="textbox-wrap">
                             <div class="input-group">
                                 <span class="input-group-addon "><i class="icon-key icon-color"></i></span>
-                                <input type="password" class="form-control " placeholder="Confirm-Password" required="required" />
+                                <input type="password" name="confirmedpassword" class="form-control " placeholder="Confirm-Password" required="required" />
                             </div>
                         </div>
 

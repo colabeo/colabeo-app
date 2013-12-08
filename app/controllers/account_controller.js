@@ -34,6 +34,7 @@ AccountController.registrationForm = function() {
 };
 
 AccountController.loginForm = function() {
+  console.log("login form - authenticated - " + this.req.isAuthenticated());
   this.render();
 };
 
@@ -55,15 +56,43 @@ AccountController.create = function() {
   });
 };
 
+AccountController.signup = function() {
+    var user = new Parse.User();
+    user.set("username", this.param('email'));
+    user.set("password", this.param('password'));
+    user.set("email", this.param('email'));
+
+    var self = this;
+    user.signUp(null, {
+        success: function(user) {
+            // Hooray! Let them use the app now.
+            console.log("Sign up - success");
+            self.redirect('/');
+        },
+        error: function(user, error) {
+            // Show the error message somewhere and let the user try again.
+            // alert("Error: " + error.code + " " + error.message);
+        }
+    });
+}
+
 AccountController.login = function() {
+  var self = this;
   passport.authenticate('local', {
-    successRedirect: this.urlFor({ action: 'show' }),
+    successRedirect: '/',
     failureRedirect: this.urlFor({ action: 'login' }) }
   )(this.__req, this.__res, this.__next);
 };
 
 AccountController.logout = function() {
+
+  console.log('@ before logout(), current Passport user - ' + JSON.stringify(this.req.user));
+  console.log('@ before logout(), current Parse user - ' + JSON.stringify(Parse.User.current()));
+
   this.req.logout();
+
+  console.log('@ after logout(), current Passport user - ' + JSON.stringify(this.req.user));
+  console.log('@ after logout(), current Parse user - ' + JSON.stringify(Parse.User.current()));
   this.redirect('/');
 };
 

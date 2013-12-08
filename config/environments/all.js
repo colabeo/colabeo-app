@@ -1,5 +1,6 @@
 var express = require('express');
 var passport = require('passport');
+var flash = require('connect-flash');
 
 module.exports = function() {
   // Configure application settings.  Consult the Express API Reference for a
@@ -11,8 +12,12 @@ module.exports = function() {
   this.engine('ejs', require('ejs').__express);
 
   this.use(express.logger({ format: '\x1b[1m:method\x1b[0m \x1b[33m:url\x1b[0m :response-time ms' }));
+  this.use(express.logger());
   this.use(express.cookieParser());
   this.use(express.bodyParser());
+  this.use(express.methodOverride());
+  this.use(express.session({ secret: 'keyboard cat' }));
+  this.use(flash());
 
   this.use(passport.initialize());
   this.use(passport.session());
