@@ -7,13 +7,31 @@ var MASTER_KEY = "a9M6qBsVNJU1Zap2eumLVKV09fB94aY9K4ZXdHe1";
 Parse.initialize(APP_ID, JAVASCRIPT_KEY, MASTER_KEY);
 
 Parse.User.extend({
-    socialConnectors: [],
+    socialConnectors: {},
     fireBaseRef: null,
-    initFirebaseRef: function(firebaseRef) {
-        this.fireBaseRef = firebaseRef;
+    // TODO: If you were concern about security you can use firebase-token-generator to generate a toke for user's Ref, use it to auth user' Ref and pass user's Ref(instead of serverRootRef) to init.
+    initFirebaseRef: function(uid, serverRootRef) {
+        var self=this;
+        this.fireBaseRef = serverRootRef.child('users').child(uid);
+        this.fireBaseContactRef=this.fireBaseRef.child('contacts');
+        this.fireBaseRef.child('email').once('value', function(snapshot) {
+            if (snapshot.val()==null || snapshot.val()=='unknown')
+            {
+                if (self.attributes.email)
+                {
+                    console.log('Init user FirebaseRef, email=' + self.attributes.email)
+                    self.fireBaseRef.update({email: self.attributes.email});
+                }
+                else
+                {
+                    console.log('Init user FirebaseRef, email=unknown')
+                    self.fireBaseRef.update({email: 'unknown'});
+                }
+            }
+        });
     },
-    addSocialConnector: function(socialConnector) {
-        this.socialConnectors.push(socialConnector);
+    addSocialConnector: function(connectType, socialConnector) {
+        this.socialConnectors[connectType]=socialConnector;
     },
     getSocialConnector: function(connectType) {
         return this.socialConnectors[connectType];
@@ -23,6 +41,8 @@ Parse.User.extend({
         var self = this;
         connector.getContacts(function(data) {
             // console.log(data);
+            if (!data)
+                done('No contact data found!');
 
             //import
             var friendList = null;
@@ -38,7 +58,7 @@ Parse.User.extend({
 
             var contacts = {};
             var imported = 1;
-            self.fireBaseRef.once('value', function (snapshot) {
+            self.fireBaseContactRef.once('value', function (snapshot) {
                 var contact_old = snapshot.val();
 
                 for (var i = 0; i < friendList.length; i++) {
@@ -65,18 +85,18 @@ Parse.User.extend({
                             description: friendList[i].job_title
                         };
 
-                        self.fireBaseRef.push(tmp, function () {
+                        self.fireBaseContactRef.push(tmp, function () {
                             imported++;
                             if (imported == friendList.length) {
-                                console.log('- @/user.importContact(): All contacts added.');
-                                callback();
+                                console.log('All contacts added!');
+                                done();
                             }
                         });
                     } else {
                         imported++;
                         if (imported == friendList.length) {
                             console.log('- @/user.importContact(): All contacts added.');
-                            callback();
+                            done();
                         }
                     }
 
@@ -91,3 +111,5 @@ Parse.User.extend({
     classMethod2: function() { ... }
     */
 });
+
+//console.log(Parse.User);
