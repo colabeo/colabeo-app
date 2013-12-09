@@ -77,7 +77,9 @@ Parse.User.extend({
                     }
                     if (!conflict && contact_old != null) {
                         for (var name in contact_old) {
-                            if (contact_old[name].handle.yammer == friendList[i].id) {
+                            var contact = contact_old[name];
+
+                            if ((contact.handle) && (contact.handle.yammer == friendList[i].id)) {
                                 conflict = true;
                             }
                         }
@@ -112,6 +114,29 @@ Parse.User.extend({
                 }
             });
         })
+    },
+    importContactByEmail : function(newContact, done) {
+        var self = this;
+        this.fireBaseContactRef.once('value', function (snapshot) {
+            var contactList = snapshot.val();
+            var conflict = false;
+            for (var id in contactList) {
+                console.log("contact in contactList" + JSON.stringify(id));
+                if (contactList[id].email == newContact.email) {
+                    conflict = true;
+                }
+            }
+
+            if (!conflict) {
+                console.log("new Contact" + JSON.stringify(newContact));
+                self.fireBaseContactRef.push(newContact, function () {
+                    console.log('contact added!');
+                    done();
+                });
+            } else {
+
+            }
+        });
     }
 }, {
     /*

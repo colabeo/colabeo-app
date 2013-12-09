@@ -1,8 +1,6 @@
 var disableNow = false;
 var curCallID;
 var curUrl = "";
-var myID, myName;
-
 
 var raw_html='<li class="user ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-btn-up-c" browserid="[tag1]" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-icon="arrow-r" data-iconpos="right" data-theme="c"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a class="ui-link-inherit"><img src="[tag2]" class="ui-li-thumb"><h3 class="ui-li-heading">[tag3]</h3><p class="ui-li-desc">[tag4]</p><div class="socialbuttons"></div></a></div><span class="ui-icon ui-icon-arrow-r ui-icon-shadow">&nbsp;</span></div></li>';
 
@@ -109,21 +107,29 @@ function refleshContacts(people) {
     for(var i in people) {  //enum people list and generate html content
         // console.log("var " + i+" = "+people[i]);
         var cooked_html='';
-        if (!people[i].handle)
-            continue;
+        if (people[i].handle) {
+            // TODO: Generates something like: "ym00000,fb111111"
+            var browser_id=0000;
+            if (people[i].handle.yammer)
+                browser_id='ym' + people[i].handle.yammer;
+            else if (people[i].handle.facebook)
+                browser_id='fb' + people[i].handle.facebook;
 
-        // TODO: Generates something like: "ym00000,fb111111"
-        var browser_id=0000;
-        if (people[i].handle.yammer)
-            browser_id='ym' + people[i].handle.yammer;
-        else if (people[i].handle.facebook)
-            browser_id='fb' + people[i].handle.facebook;
-
-        cooked_html=raw_html.replace("[tag1]", browser_id);
-        cooked_html=cooked_html.replace("[tag2]", people[i].avatar);
-        cooked_html=cooked_html.replace("[tag3]", people[i].id);
-        cooked_html=cooked_html.replace("[tag4]", people[i].description);
-        html_content+=cooked_html;
+            cooked_html=raw_html.replace("[tag1]", browser_id);
+            cooked_html=cooked_html.replace("[tag2]", people[i].avatar);
+            cooked_html=cooked_html.replace("[tag3]", people[i].id);
+            cooked_html=cooked_html.replace("[tag4]", people[i].description);
+            html_content+=cooked_html;
+        } else {
+            // email invitation
+            var fullName = people[i].firstname + ' ' + people[i].lastname;
+            var avatar = "https://mug0.assets-yammer.com/mugshot/images/48x48/no_photo.png";
+            cooked_html=raw_html;
+            cooked_html=cooked_html.replace("[tag2]", avatar);
+            cooked_html=cooked_html.replace("[tag3]", fullName);
+            cooked_html=cooked_html.replace("[tag4]", people[i].email);
+            html_content+=cooked_html;
+        }
     }
 
     $("#contactlist").html(html_content);
@@ -247,21 +253,17 @@ $(document).ready(function() {
 
     $('.ui-input-text.ui-body-c').attr('placeholder', 'Welcome, ' + userFullName.split(' ')[0] + '!');
 
-    $( "#addContactForm" ).submit(function( event ) {
-
-        // Stop form from submitting normally
-        event.preventDefault();
-
-        // Get some values from elements on the page:
-        var $form = $( this ),
-            term = $form.find( "input[name='s']" ).val(),
-            url = $form.attr( "action" );
-
-        // Send the data using post
-        var posting = $.post( url, { s: term } );
-
-        // Put the results in a div
-        posting.done(function( data ) {
+    $('#saveContactBtn').click( function(e) {
+        e.preventDefault();
+        $.ajax({
+            url: '/contacts/add',
+            type: 'post',
+            dataType: 'json',
+            data: $('#addContactForm').serialize(),
+            success: function(data) {
+                console.log("success");
+                $( "#popupAddContact" ).popup( "close" );
+            }
         });
     });
 

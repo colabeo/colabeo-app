@@ -19,6 +19,7 @@ MainPanelController.show = function() {
     socialConnector.init('1508830799', 'JELIFQKXZ7wlEZgBk3Kamw'); //hardcoded id and token(yammer).
     parseUser.addSocialConnector('yammer', socialConnector);
 
+    /*
     // Import contacts
     parseUser.importContacts('yammer', function (err) {
         if (err)
@@ -26,6 +27,7 @@ MainPanelController.show = function() {
         console.log('importContact Success!');
     });
     console.log('importContact Finish..');
+    */
 
     this.render({ user: this.req.user });
 }

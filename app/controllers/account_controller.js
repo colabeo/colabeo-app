@@ -58,6 +58,8 @@ AccountController.create = function() {
 
 AccountController.signup = function() {
     var user = new Parse.User();
+    user.set("lastname", this.param('lastname'));
+    user.set("firstname", this.param('firstname'));
     user.set("username", this.param('email'));
     user.set("password", this.param('password'));
     user.set("email", this.param('email'));
