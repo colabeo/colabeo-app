@@ -3,8 +3,9 @@ var https = require('https');
 var YammerConnector = function() {
 }
 
-YammerConnector.prototype.init = function(accessToken) {
+YammerConnector.prototype.init = function(id, accessToken) {
     this.accessToken = accessToken;
+    this.id=id;
 }
 
 YammerConnector.prototype.getData = function(accessToken, apiPath, callback) {

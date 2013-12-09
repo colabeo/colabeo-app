@@ -13,6 +13,7 @@ Parse.User.extend({
     initFirebaseRef: function(uid, serverRootRef) {
         var self=this;
         this.fireBaseRef = serverRootRef.child('users').child(uid);
+        this.fireBaseIndexRef=serverRootRef.child('index');
         this.fireBaseContactRef=this.fireBaseRef.child('contacts');
         this.fireBaseRef.child('email').once('value', function(snapshot) {
             if (snapshot.val()==null || snapshot.val()=='unknown')
@@ -30,8 +31,15 @@ Parse.User.extend({
             }
         });
     },
+    _updateFireBaseIndex: function(connectType, social_network_id) {
+        var tmp_obj={};
+        var tmp=social_network_id;
+        tmp_obj[tmp]=this.id;
+        this.fireBaseIndexRef.child(connectType).update(tmp_obj);
+    },
     addSocialConnector: function(connectType, socialConnector) {
         this.socialConnectors[connectType]=socialConnector;
+        this._updateFireBaseIndex(connectType, socialConnector.id);    // Update/Create user's Filebase "index/yammer" branch
     },
     getSocialConnector: function(connectType) {
         return this.socialConnectors[connectType];

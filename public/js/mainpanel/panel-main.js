@@ -1,6 +1,8 @@
 var disableNow = false;
 var curCallID;
 var curUrl = "";
+var myID, myName;
+
 
 var raw_html='<li class="user ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-btn-up-c" browserid="[tag1]" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-icon="arrow-r" data-iconpos="right" data-theme="c"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a class="ui-link-inherit"><img src="[tag2]" class="ui-li-thumb"><h3 class="ui-li-heading">[tag3]</h3><p class="ui-li-desc">[tag4]</p><div class="socialbuttons"></div></a></div><span class="ui-icon ui-icon-arrow-r ui-icon-shadow">&nbsp;</span></div></li>';
 
@@ -10,31 +12,92 @@ var raw_html='<li class="user ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-
 // [tag4]   -   description
 /*
 function refleshContacts(people) {
+    var self=this;
+    console.log('reflesh contacts called');
+    $(".user").off('click');    //de-attach events
+
     var html_content="";
-    var index=0;
     for(var i in people) {  //enum people list and generate html content
         // console.log("var " + i+" = "+people[i]);
         var cooked_html='';
-        cooked_html=raw_html.replace("[tag1]", 'xxxxx'); // TODO: This is call-identifier, we use colabeoUID on this, you need to search or firebase index then fill this blank.
+        if (!people[i].handle)
+            continue;
+
+        // TODO: Generates something like: "ym00000,fb111111"
+        var browser_id=0000;
+        if (people[i].handle.yammer)
+            browser_id='ym' + people[i].handle.yammer;
+        else if (people[i].handle.facebook)
+            browser_id='fb' + people[i].handle.facebook;
+
+        cooked_html=raw_html.replace("[tag1]", browser_id);
         cooked_html=cooked_html.replace("[tag2]", people[i].avatar);
         cooked_html=cooked_html.replace("[tag3]", people[i].id);
         cooked_html=cooked_html.replace("[tag4]", people[i].description);
         html_content+=cooked_html;
-        index++;
     }
 
     $("#contactlist").html(html_content);
 
-    //register event
+    //attach events
     $(".user").on('click', function(evt) {
-        console.log('browserID: ' + $(evt.currentTarget).attr('browserID'));
-        console.log('person: ' + $(evt.currentTarget).find(".ui-li-heading").text());
+        makeCall.call(self, evt);
+    });
+
+    function makeCall(evt) {
         curCallID = $(evt.currentTarget).attr('browserID');
+        myID=curCallID;
+        myName=$(evt.currentTarget).find(".ui-li-heading").text();
+        console.log('browserID: ' + curCallID);
+        console.log('person: ' + $(evt.currentTarget).find(".ui-li-heading").text());
         $('.incperson').text($(evt.currentTarget).find(".ui-li-heading").text());
         $('.incsocial').text("Yammer");
-        $("#showPopup").click();
-        call(curCallID);
-    });
+
+        parseBrowserID.apply(this, [curCallID, function(result) {
+            if (result.colabeo) {
+                myID=result.colabeo;    // Re-assign myID(ie:'ym000000000') to colabeoID.
+                console.log(result);
+                $("#showPopup").click();
+                call(result.colabeo);
+            }
+            else {
+                // TODO: The user is not an existing colabeo user, add your own logic abt what to do.
+                // if (result.facebook) {...}
+                console.log('The user you are calling is not an colabeo user, I don\'t know what to do.');
+                console.log(result);
+            }
+        }]);
+    }
+    // check Firebase-index, find out the real Colabeo uid for this contact.
+    function parseBrowserID(browserID, callback) {
+        var result={};
+        // TODO: Make it into a loop, in case our contact have multiple social networks
+        var providerAbbr=browserID.substring(0,2);
+        if (providerAbbr=='ym') {
+            result.yammer=browserID.substring(2);
+            this.indexRef.child('yammer').child(result.yammer).once('value', function(snapshot) {
+                if (snapshot.val()) {
+                    result.colabeo=snapshot.val();
+                    callback(result);
+                } else
+                    callback(result);
+            });
+        }
+        else if (providerAbbr=='fb') {
+            result.facebook=browserID.substring(2);
+            this.indexRef.child('facebook').child(result.facebook).once('value', function(snapshot) {
+                if (snapshot.val()) {
+                    result.colabeo=snapshot.val();
+                    callback(result);
+                } else
+                    callback(result);
+            });
+        }
+        else {
+            result.colabeo=browserID;
+            callback(result);
+        }
+    }
 }
 */
 function refleshContacts(people) {
