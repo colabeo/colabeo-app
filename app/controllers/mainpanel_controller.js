@@ -16,7 +16,7 @@ MainPanelController.show = function() {
 
     // Add connector
     var socialConnector=new YammerConnector();
-    socialConnector.init('JELIFQKXZ7wlEZgBk3Kamw'); //hardcoded token
+    socialConnector.init('1508830799', 'JELIFQKXZ7wlEZgBk3Kamw'); //hardcoded id and token(yammer).
     parseUser.addSocialConnector('yammer', socialConnector);
 
     // Import contacts
