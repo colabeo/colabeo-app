@@ -4,12 +4,11 @@ var curUrl = "";
 
 var raw_html='<li class="user ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-btn-up-c" browserid="[tag1]" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-icon="arrow-r" data-iconpos="right" data-theme="c"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a class="ui-link-inherit"><img src="[tag2]" class="ui-li-thumb"><h3 class="ui-li-heading">[tag3]</h3><p class="ui-li-desc">[tag4]</p><div class="socialbuttons"></div></a></div><span class="ui-icon ui-icon-arrow-r ui-icon-shadow">&nbsp;</span></div></li>';
 
-
 // [tag1]   -   browserID(berryID)
 // [tag2]   -   image link
 // [tag3]   -   full name
 // [tag4]   -   description
-
+/*
 function refleshContacts(people) {
     var html_content="";
     var index=0;
@@ -37,6 +36,95 @@ function refleshContacts(people) {
         call(curCallID);
     });
 }
+*/
+function refleshContacts(people) {
+    var self=this;
+    console.log('reflesh contacts called');
+    $(".user").off('click');    //de-attach events
+
+    var html_content="";
+    for(var i in people) {  //enum people list and generate html content
+        // console.log("var " + i+" = "+people[i]);
+        var cooked_html='';
+        if (!people[i].handle)
+            continue;
+
+        // TODO: Generates something like: "ym00000,fb111111"
+        var browser_id=0000;
+        if (people[i].handle.yammer)
+            browser_id='ym' + people[i].handle.yammer;
+        else if (people[i].handle.facebook)
+            browser_id='fb' + people[i].handle.facebook;
+
+        cooked_html=raw_html.replace("[tag1]", browser_id);
+        cooked_html=cooked_html.replace("[tag2]", people[i].avatar);
+        cooked_html=cooked_html.replace("[tag3]", people[i].id);
+        cooked_html=cooked_html.replace("[tag4]", people[i].description);
+        html_content+=cooked_html;
+    }
+
+    $("#contactlist").html(html_content);
+
+    //attach events
+    $(".user").on('click', function(evt) {
+        makeCall.call(self, evt);
+    });
+
+    function makeCall(evt) {
+        curCallID = $(evt.currentTarget).attr('browserID');
+        var myID=curCallID;
+        var myName=$(evt.currentTarget).find(".ui-li-heading").text();
+        console.log('browserID: ' + curCallID);
+        console.log('person: ' + $(evt.currentTarget).find(".ui-li-heading").text());
+        $('.incperson').text($(evt.currentTarget).find(".ui-li-heading").text());
+        $('.incsocial').text("Yammer");
+
+        parseBrowserID.apply(this, [curCallID, function(result) {
+            if (result.colabeo) {
+                myID=result.colabeo;    // Re-assign myID(ie:'ym000000000') to colabeoID.
+                console.log(result);
+                $("#showPopup").click();
+                call(result.colabeo);
+            }
+            else {
+                // TODO: The user is not an existing colabeo user, add your own logic abt what to do.
+                // if (result.facebook) {...}
+                console.log('The user you are calling is not an colabeo user, I don\'t know what to do.');
+                console.log(result);
+            }
+        }]);
+    }
+    // check Firebase-index, find out the real Colabeo uid for this contact.
+    function parseBrowserID(browserID, callback) {
+        var result={};
+        // TODO: Make it into a loop, in case our contact have multiple social networks
+        var providerAbbr=browserID.substring(0,2);
+        if (providerAbbr=='ym') {
+            result.yammer=browserID.substring(2);
+            this.indexRef.child('yammer').child(result.yammer).once('value', function(snapshot) {
+                if (snapshot.val()) {
+                    result.colabeo=snapshot.val();
+                    callback(result);
+                } else
+                    callback(result);
+            });
+        }
+        else if (providerAbbr=='fb') {
+            result.facebook=browserID.substring(2);
+            this.indexRef.child('facebook').child(result.facebook).once('value', function(snapshot) {
+                if (snapshot.val()) {
+                    result.colabeo=snapshot.val();
+                    callback(result);
+                } else
+                    callback(result);
+            });
+        }
+        else {
+            result.colabeo=browserID;
+            callback(result);
+        }
+    }
+}
 
 function BerryBase(FirebaseURL, userID) {
     this.Firebase=FirebaseURL;
@@ -44,6 +132,7 @@ function BerryBase(FirebaseURL, userID) {
     this.FirebaseRef=new Firebase(FirebaseURL);
     this.FirebaseUserRef=this.FirebaseRef.child('users');
     this.FirebaseMyRef=this.FirebaseUserRef.child(userID);
+    this.indexRef=this.FirebaseRef.child('index');
 }
 
 // callback will usually be the function thats altering html page
@@ -54,7 +143,7 @@ BerryBase.prototype.getContacts = function(callback)
     this.ContactsRef.on('value', function(snapshot) {
         if (snapshot.name()=='contacts') {
             console.log(snapshot.val());
-            callback(snapshot.val());
+            callback.call(self, snapshot.val());
         } else {
             console.log("On "+ self.userID + ", no contacts found!");
         }
@@ -64,7 +153,11 @@ BerryBase.prototype.getContacts = function(callback)
 //=================================================================
 
 function getUserID() {
-    return $('#objectId').attr('data-id');
+    return $('#userId').attr('data-value');
+}
+
+function getUserFullName() {
+    return $('#userFirstName').attr('data-value') + ' ' + $('#userLastName').attr('data-value');
 }
 
 function GetURLParameter(sParam) {
@@ -87,7 +180,27 @@ $(document).ready(function() {
     myBerry = new BerryBase('https://koalalab-berry.firebaseio.com/', userID);
     myBerry.getContacts(refleshContacts);
 
-    $('.ui-input-text.ui-body-c').attr('placeholder', 'Welcome, ' + myName.split(' ')[0] + '!');
+    var userFullName = getUserFullName();
+
+    $('.ui-input-text.ui-body-c').attr('placeholder', 'Welcome, ' + userFullName.split(' ')[0] + '!');
+
+    $( "#addContactForm" ).submit(function( event ) {
+
+        // Stop form from submitting normally
+        event.preventDefault();
+
+        // Get some values from elements on the page:
+        var $form = $( this ),
+            term = $form.find( "input[name='s']" ).val(),
+            url = $form.attr( "action" );
+
+        // Send the data using post
+        var posting = $.post( url, { s: term } );
+
+        // Put the results in a div
+        posting.done(function( data ) {
+        });
+    });
 
     $("#answer").on('click', function(evt) {
         answer();
@@ -100,7 +213,9 @@ $(document).ready(function() {
         curCallID = "";
     });
     setTimeout(function() {
-        sendMessage("event", {data: {action:"syncID", id: myID, name: myName}});
+        var userId = getUserID();
+        var userFullName = getUserFullName();
+        sendMessage("event", {data: {action:"syncID", id: userId, name: userFullName}});
     }, 3000);
     $(".syncBtn").on('click', function(evt) {
         sendMessage("event", {data: {action:"sync"}});
@@ -111,8 +226,9 @@ $(document).ready(function() {
     });
 
     $("#declineBtn").on('click', function() {
-        if (myID)
-            hangup(myID);
+        var userId = getUserID();
+        if (userId)
+            hangup(userId);
     });
 
     $("#gotoBtn").on('click', function(evt) {
@@ -145,13 +261,15 @@ $(document).on('pageinit', function(e) {
 
 function call(outgoingId) {
     var outgoingCallRef = new Firebase('https://de-berry.firebaseio-demo.com/call/' + outgoingId);
+    var userId = getUserID();
+    var userFullName = getUserFullName();
     outgoingCallRef.push({
-        name : myID,
-        person : myName
+        name : userId,
+        person : userFullName
     });
     outgoingCallRef.on('child_removed', function(snapshot) {
         var callerId = snapshot.val()['name'];
-        if (callerId == myID) {
+        if (callerId == userId) {
             if ($('#popup:visible')[0] && !$('#chatContainer')[0])
                 injectVideoChat(snapshot.name());
         } else {
@@ -165,7 +283,8 @@ function hangup(outgoingId) {
     outgoingCallRef.remove();
 }
 function answer() {
-    var outgoingCallRef = new Firebase('https://de-berry.firebaseio-demo.com/call/' + myID);
+    var userId = getUserID();
+    var outgoingCallRef = new Firebase('https://de-berry.firebaseio-demo.com/call/' + userId);
     outgoingCallRef.remove();
     outgoingCallRef.on('child_removed', function(snapshot) {
         var roomID = snapshot.name();
