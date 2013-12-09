@@ -15,7 +15,28 @@ ContactsController.add = function() {
     var user = Parse.User.current();
     var self = this;
     user.importContactByEmail(newContact, function() {
-        self.res.json({ status : 'done' });
+        var API_USERNAME = "chapman";
+        var API_PASSWORD = "qwerty23";
+
+        var sendgrid  = require('sendgrid')(API_USERNAME, API_PASSWORD);
+
+        var smtpapiHeaders = new sendgrid.SmtpapiHeaders();
+        smtpapiHeaders.addFilterSetting('subscriptiontrack', 'enable', '0');
+
+        sendgrid.send({
+            smtpapi: smtpapiHeaders,
+            to:       newContact.email,
+            from:     user.get("email"),
+            subject:  "Hello from Colabeo",
+            text : "Please install Colabeo"
+        }, function(err, json) {
+            if (err) {
+                console.error(err);
+            }
+            else
+                console.log(json);
+            self.res.json(json);
+        });
     });
 };
 

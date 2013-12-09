@@ -166,6 +166,11 @@ function refleshContacts(people) {
     // check Firebase-index, find out the real Colabeo uid for this contact.
     function parseBrowserID(browserID, callback) {
         var result={};
+        if (!browserID) {
+            result.colabeo = getUserID();
+            callback(result.colabeo);
+            return;
+        }
         // TODO: Make it into a loop, in case our contact have multiple social networks
         var providerAbbr=browserID.substring(0,2);
         if (providerAbbr=='ym') {
