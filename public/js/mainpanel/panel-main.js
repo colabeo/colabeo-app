@@ -125,6 +125,7 @@ function refleshContacts(people) {
             var fullName = people[i].firstname + ' ' + people[i].lastname;
             var avatar = "https://mug0.assets-yammer.com/mugshot/images/48x48/no_photo.png";
             cooked_html=raw_html;
+            cooked_html=raw_html.replace("[tag1]", people[i].cid);
             cooked_html=cooked_html.replace("[tag2]", avatar);
             cooked_html=cooked_html.replace("[tag3]", fullName);
             cooked_html=cooked_html.replace("[tag4]", people[i].email);
@@ -166,11 +167,6 @@ function refleshContacts(people) {
     // check Firebase-index, find out the real Colabeo uid for this contact.
     function parseBrowserID(browserID, callback) {
         var result={};
-        if (!browserID) {
-            result.colabeo = getUserID();
-            callback(result.colabeo);
-            return;
-        }
         // TODO: Make it into a loop, in case our contact have multiple social networks
         var providerAbbr=browserID.substring(0,2);
         if (providerAbbr=='ym') {
