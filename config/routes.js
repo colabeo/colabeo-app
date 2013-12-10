@@ -8,7 +8,7 @@ module.exports = function routes() {
   this.match('signup', 'account#signup', { via: 'post' });
   this.match('login', 'account#loginForm', { via: 'get' });
   this.match('login', 'account#login', { via: 'post' });
-  this.match('logout', 'account#logout');
+  this.match('logout', 'account#logout', { via: 'get' });
   this.match('contact/import', 'account#importContacts', { via: 'post' });
   this.match('contacts/add', 'contacts#add', { via: 'post'});
   this.match('user/lookup', 'account#lookup', { via: 'post'});
