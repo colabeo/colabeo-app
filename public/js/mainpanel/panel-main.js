@@ -339,7 +339,7 @@ $(document).on('pageinit', function(e) {
 });
 
 function call(callee) {
-    var calleeId = callee.id;
+    var calleeId = callee.objectId;
     var outgoingCallRef = new Firebase('https://de-berry.firebaseio-demo.com/call/' + calleeId);
     var callerId = getUserID();
     var callerFullName = getUserFullName();
