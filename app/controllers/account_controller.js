@@ -98,4 +98,18 @@ AccountController.importContacts = function() {
     this.redirect('/');
 };
 
+AccountController.lookup = function() {
+    var externalId = this.param('externalId');
+    console.log(externalId);
+    var query = new Parse.Query(Parse.User);
+    var self = this;
+    query.equalTo("email", externalId);
+    query.find({
+        success: function(users) {
+            console.log("user - " + JSON.stringify(users[0]));
+            self.res.json({ callee :  users[0] });
+        }
+    });
+}
+
 module.exports = AccountController;

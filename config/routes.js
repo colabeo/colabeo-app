@@ -11,4 +11,5 @@ module.exports = function routes() {
   this.match('logout', 'account#logout');
   this.match('contact/import', 'account#importContacts', { via: 'post' });
   this.match('contacts/add', 'contacts#add', { via: 'post'});
+  this.match('user/lookup', 'account#lookup', { via: 'post'});
 };

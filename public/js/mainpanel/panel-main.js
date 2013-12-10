@@ -125,7 +125,7 @@ function refleshContacts(people) {
             var fullName = people[i].firstname + ' ' + people[i].lastname;
             var avatar = "https://mug0.assets-yammer.com/mugshot/images/48x48/no_photo.png";
             cooked_html=raw_html;
-            cooked_html=raw_html.replace("[tag1]", people[i].cid);
+            cooked_html=raw_html.replace("[tag1]", people[i].email);
             cooked_html=cooked_html.replace("[tag2]", avatar);
             cooked_html=cooked_html.replace("[tag3]", fullName);
             cooked_html=cooked_html.replace("[tag4]", people[i].email);
@@ -141,20 +141,19 @@ function refleshContacts(people) {
     });
 
     function makeCall(evt) {
-        curCallID = $(evt.currentTarget).attr('browserID');
-        var myID=curCallID;
-        var myName=$(evt.currentTarget).find(".ui-li-heading").text();
-        console.log('browserID: ' + curCallID);
-        console.log('person: ' + $(evt.currentTarget).find(".ui-li-heading").text());
-        $('.incperson').text($(evt.currentTarget).find(".ui-li-heading").text());
-        $('.incsocial').text("Yammer");
+        var externalId = $(evt.currentTarget).attr('browserID');
+        //var myName=$(evt.currentTarget).find(".ui-li-heading").text();
+        //console.log('externalId: ' + externalId);
+        //console.log('person: ' + $(evt.currentTarget).find(".ui-li-heading").text());
 
-        parseBrowserID.apply(this, [curCallID, function(result) {
-            if (result.colabeo) {
-                myID=result.colabeo;    // Re-assign myID(ie:'ym000000000') to colabeoID.
-                console.log(result);
+        userLookup.apply(this, [externalId, function(result) {
+            var callee = result.callee;
+            if (callee) {
+
+                $('.incperson').text($(evt.currentTarget).find(".ui-li-heading").text());
+                $('.incsocial').text(externalId);
                 $("#showPopup").click();
-                call(result.colabeo);
+                call(callee);
             }
             else {
                 // TODO: The user is not an existing colabeo user, add your own logic abt what to do.
@@ -164,6 +163,20 @@ function refleshContacts(people) {
             }
         }]);
     }
+
+    function userLookup(externalId, done) {
+        $.ajax({
+            url: '/user/lookup',
+            type: 'post',
+            dataType: 'json',
+            data: { externalId : externalId },
+            success: function(data) {
+                console.log(JSON.stringify(data));
+                done(data);
+            }
+        });
+    }
+
     // check Firebase-index, find out the real Colabeo uid for this contact.
     function parseBrowserID(browserID, callback) {
         var result={};
@@ -325,17 +338,18 @@ $(document).on('pageinit', function(e) {
     });
 });
 
-function call(outgoingId) {
-    var outgoingCallRef = new Firebase('https://de-berry.firebaseio-demo.com/call/' + outgoingId);
-    var userId = getUserID();
-    var userFullName = getUserFullName();
+function call(callee) {
+    var calleeId = callee.id;
+    var outgoingCallRef = new Firebase('https://de-berry.firebaseio-demo.com/call/' + calleeId);
+    var callerId = getUserID();
+    var callerFullName = getUserFullName();
     outgoingCallRef.push({
-        name : userId,
-        person : userFullName
+        name : callerId,
+        person : callerFullName
     });
     outgoingCallRef.on('child_removed', function(snapshot) {
         var callerId = snapshot.val()['name'];
-        if (callerId == userId) {
+        if (callerId == callerId) {
             if ($('#popup:visible')[0] && !$('#chatContainer')[0])
                 injectVideoChat(snapshot.name());
         } else {
