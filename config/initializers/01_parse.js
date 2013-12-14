@@ -5,7 +5,74 @@ var JAVASCRIPT_KEY = "PhF8gvGcaWNBwWX24K7LG7wEEjIe0cVaTCtjtaXb";
 var MASTER_KEY = "a9M6qBsVNJU1Zap2eumLVKV09fB94aY9K4ZXdHe1";
 
 Parse.initialize(APP_ID, JAVASCRIPT_KEY, MASTER_KEY);
+/*
+Parse.User._saveCurrentUser = function(user) {
 
+    console.log("override Parse.User._saveCurrentUser()");
+
+    if (Parse.User._currentUser !== user) {
+        Parse.User.logOut();
+    }
+    user._isCurrentUser = true;
+    Parse.User._currentUser = user;
+    Parse.User._currentUserMatchesDisk = true;
+
+    var json = user.toJSON();
+    json._id = user.id;
+    json._sessionToken = user._sessionToken;
+    Parse.localStorage.setItem(
+        Parse._getParsePath(user._sessionToken + "/" + Parse.User._CURRENT_USER_KEY),
+        JSON.stringify(json));
+
+    console.log("Parse.localStorage - ", Parse.localStorage);
+}
+
+Parse.User.current = function(sessionToken) {
+
+    console.log("override Parse.User.current()");
+
+
+    if (Parse.User._currentUser) {
+        return Parse.User._currentUser;
+    }
+
+    if (Parse.User._currentUserMatchesDisk) {
+        // TODO: Lazily log in anonymous user.
+        return Parse.User._currentUser;
+    }
+
+
+    // Load the user from local storage.
+    Parse.User._currentUserMatchesDisk = true;
+
+    console.log("Parse.localStorage - ", Parse.localStorage);
+    var userData;
+    if (sessionToken) {
+        console.log("Parse._getParsePath(sessionToken) - ", Parse._getParsePath(sessionToken));
+        userData = Parse.localStorage.getItem(Parse._getParsePath(sessionToken + "/" + Parse.User._CURRENT_USER_KEY));
+    }
+
+    if (!userData) {
+        // TODO: Lazily log in anonymous user.
+        return null;
+    }
+    Parse.User._currentUser = Parse.Object._create("_User");
+    Parse.User._currentUser._isCurrentUser = true;
+
+    var json = JSON.parse(userData);
+    Parse.User._currentUser.id = json._id;
+    delete json._id;
+    Parse.User._currentUser._sessionToken = json._sessionToken;
+    delete json._sessionToken;
+    Parse.User._currentUser.set(json);
+
+    Parse.User._currentUser._synchronizeAllAuthData();
+    Parse.User._currentUser._refreshCache();
+    Parse.User._currentUser._opSetQueue = [{}];
+    return Parse.User._currentUser;
+
+}
+*/
 Parse.User.extend({
     socialConnectors: {},
     fireBaseRef: null,
@@ -139,10 +206,10 @@ Parse.User.extend({
         });
     }
 }, {
-    /*
-    classMethod1: function() { ... },
-    classMethod2: function() { ... }
-    */
+
+//    classMethod1: function() { ... },
+//    classMethod2: function() { ... }
+
 });
 
 //console.log(Parse.User);

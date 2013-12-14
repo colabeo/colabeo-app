@@ -17,6 +17,8 @@ module.exports = function() {
   this.use(express.bodyParser());
   this.use(express.methodOverride());
   this.use(express.session({ secret: 'keyboard cat' }));
+  //this.use(express.cookieParser('colabeo'));
+  //this.use(express.cookieSession({ secret: 'keyboard cat' }));
   this.use(flash());
 
   this.use(passport.initialize());

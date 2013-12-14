@@ -15,8 +15,12 @@ passport.use(new LocalStrategy({
       console.log("password - " + password);
       Parse.User.logIn(email, password, {
           success: function(user) {
-              console.log("login - success" + JSON.stringify(user));
-              console.log(done);
+
+//              var parseUser=Parse.User.current(user._sessionToken); //this.req.user is just a reference of Parse.User.current()
+//              //    console.log(parseUser);
+//              parseUser.initFirebaseRef(parseUser.id, serverRootRef);
+//              console.log("has import contact by email function ", parseUser.importContactByEmail);
+//              return done(null, parseUser);
               return done(null, user);
           },
           error: function(user, error) {
@@ -32,8 +36,11 @@ passport.use(new LocalStrategy({
 // Passport session setup.
 
 passport.serializeUser(function(user, done) {
-  console.log("serializeUser - ", user.id);
-  done(null, user.id);
+//  console.log("serializeUser - ", user._sessionToken);
+//  done(null, user._sessionToken);
+
+    console.log("user - ", user.id);
+    done(null, user.id);
 });
 
 passport.deserializeUser(function(id, done) {
@@ -49,4 +56,13 @@ passport.deserializeUser(function(id, done) {
             done(null, user);
         }
     });
+
+//    console.log("deserializeUser - ", sessionToken);
+//    //var user = Parse.User.current(id);
+//    Parse.User.become(sessionToken);
+//    var user = Parse.User.current();
+//
+//    //console.log("deserializeUser - after Parse.User.become - ", user);
+//
+//    done(null, user);
 });
